@@ -1,0 +1,225 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vis-network@latest/styles/vis-network.css" type="text/css" />
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vis-network@latest/dist/vis-network.min.js"> </script>
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 1200;
+            height: 1500;
+            background-color: #ffffff;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+        #loadingBar {
+            position:absolute;
+            top:0px;
+            left:0px;
+            width: 1200;
+            height: 1500;
+            background-color:rgba(200,200,200,0.8);
+            -webkit-transition: all 0.5s ease;
+            -moz-transition: all 0.5s ease;
+            -ms-transition: all 0.5s ease;
+            -o-transition: all 0.5s ease;
+            transition: all 0.5s ease;
+            opacity:1;
+        }
+
+        #bar {
+            position:absolute;
+            top:0px;
+            left:0px;
+            width:20px;
+            height:20px;
+            margin:auto auto auto auto;
+            border-radius:11px;
+            border:2px solid rgba(30,30,30,0.05);
+            background: rgb(0, 173, 246); /* Old browsers */
+            box-shadow: 2px 0px 4px rgba(0,0,0,0.4);
+        }
+
+        #border {
+            position:absolute;
+            top:10px;
+            left:10px;
+            width:500px;
+            height:23px;
+            margin:auto auto auto auto;
+            box-shadow: 0px 0px 4px rgba(0,0,0,0.2);
+            border-radius:10px;
+        }
+
+        #text {
+            position:absolute;
+            top:8px;
+            left:530px;
+            width:30px;
+            height:50px;
+            margin:auto auto auto auto;
+            font-size:22px;
+            color: #000000;
+        }
+
+        div.outerBorder {
+            position:relative;
+            top:400px;
+            width:600px;
+            height:44px;
+            margin:auto auto auto auto;
+            border:8px solid rgba(0,0,0,0.1);
+            background: rgb(252,252,252); /* Old browsers */
+            background: -moz-linear-gradient(top,  rgba(252,252,252,1) 0%, rgba(237,237,237,1) 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(252,252,252,1)), color-stop(100%,rgba(237,237,237,1))); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* IE10+ */
+            background: linear-gradient(to bottom,  rgba(252,252,252,1) 0%,rgba(237,237,237,1) 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfcfc', endColorstr='#ededed',GradientType=0 ); /* IE6-9 */
+            border-radius:72px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+        }
+        
+
+        
+        #config {
+            float: left;
+            width: 400px;
+            height: 600px;
+        }
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+<div id="loadingBar">
+    <div class="outerBorder">
+        <div id="text">0%</div>
+        <div id="border">
+            <div id="bar"></div>
+        </div>
+    </div>
+</div>
+
+
+<div id = "config"></div>
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"color": "#FCE38A", "font": 100, "id": "square", "label": "square", "shape": "dot", "size": 80, "value": 657.0}, {"color": "#F38181", "font": 100, "id": "sclerophyllous_forest", "label": "sclerophyllous_forest", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#FCE38A", "font": 100, "id": "rectangular_farmland", "label": "rectangular_farmland", "shape": "dot", "size": 80, "value": 24.0}, {"color": "#EAFFD0", "font": 100, "id": "four_lanes_width", "label": "four_lanes_width", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#F38181", "font": 100, "id": "dirt_path", "label": "dirt_path", "shape": "dot", "size": 80, "value": 5.0}, {"color": "#F38181", "font": 100, "id": "baseball_field", "label": "baseball_field", "shape": "dot", "size": 80, "value": 373.0}, {"color": "#FCE38A", "font": 100, "id": "dense_residential", "label": "dense_residential", "shape": "dot", "size": 80, "value": 423.0}, {"color": "#EAFFD0", "font": 100, "id": "crosswalk", "label": "crosswalk", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#FCE38A", "font": 100, "id": "church", "label": "church", "shape": "dot", "size": 80, "value": 244.0}, {"color": "#95E1D3", "font": 100, "id": "snow", "label": "snow", "shape": "dot", "size": 80, "value": 104.0}, {"color": "#FCE38A", "font": 100, "id": "thermal_power_station", "label": "thermal_power_station", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#F38181", "font": 100, "id": "golf_course", "label": "golf_course", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#F38181", "font": 100, "id": "desert_chaparral", "label": "desert_chaparral", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#FCE38A", "font": 100, "id": "pipeline", "label": "pipeline", "shape": "dot", "size": 80, "value": 3.0}, {"color": "#FCE38A", "font": 100, "id": "circular", "label": "circular", "shape": "dot", "size": 80, "value": 103.0}, {"color": "#95E1D3", "font": 100, "id": "desert", "label": "desert", "shape": "dot", "size": 80, "value": 312.0}, {"color": "#F38181", "font": 100, "id": "fanshaped", "label": "fanshaped", "shape": "dot", "size": 80, "value": 12.0}, {"color": "#EAFFD0", "font": 100, "id": "vehicle", "label": "vehicle", "shape": "dot", "size": 80, "value": 66.0}, {"color": "#EAFFD0", "font": 100, "id": "zebra_crossing", "label": "zebra_crossing", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#95E1D3", "font": 100, "id": "parallel", "label": "parallel", "shape": "dot", "size": 80, "value": 111.0}, {"color": "#EAFFD0", "font": 100, "id": "intersection", "label": "intersection", "shape": "dot", "size": 80, "value": 26.0}, {"color": "#F38181", "font": 100, "id": "swimming_pool", "label": "swimming_pool", "shape": "dot", "size": 80, "value": 266.0}, {"color": "#FCE38A", "font": 100, "id": "basketball_court", "label": "basketball_court", "shape": "dot", "size": 80, "value": 317.0}, {"color": "#FCE38A", "font": 100, "id": "terminal_building", "label": "terminal_building", "shape": "dot", "size": 80, "value": 45.0}, {"color": "#FCE38A", "font": 100, "id": "jet_bridge", "label": "jet_bridge", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#95E1D3", "font": 100, "id": "railway_station", "label": "railway_station", "shape": "dot", "size": 80, "value": 258.0}, {"color": "#95E1D3", "font": 100, "id": "water", "label": "water", "shape": "dot", "size": 80, "value": 302.0}, {"color": "#F38181", "font": 100, "id": "stadium", "label": "stadium", "shape": "dot", "size": 80, "value": 318.0}, {"color": "#FCE38A", "font": 100, "id": "industrial_area", "label": "industrial_area", "shape": "dot", "size": 80, "value": 354.0}, {"color": "#95E1D3", "font": 100, "id": "coastline", "label": "coastline", "shape": "dot", "size": 80, "value": 14.0}, {"color": "#FCE38A", "font": 100, "id": "high-rise", "label": "high-rise", "shape": "dot", "size": 80, "value": 20.0}, {"color": "#95E1D3", "font": 100, "id": "harbor", "label": "harbor", "shape": "dot", "size": 80, "value": 18.0}, {"color": "#95E1D3", "font": 100, "id": "cloud", "label": "cloud", "shape": "dot", "size": 80, "value": 8.0}, {"color": "#FCE38A", "font": 100, "id": "river", "label": "river", "shape": "dot", "size": 80, "value": 1319.0}, {"color": "#FCE38A", "font": 100, "id": "single_building", "label": "single_building", "shape": "dot", "size": 80, "value": 1.0}, {"color": "#F38181", "font": 100, "id": "grass", "label": "grass", "shape": "dot", "size": 80, "value": 256.0}, {"color": "#FCE38A", "font": 100, "id": "road", "label": "road", "shape": "dot", "size": 80, "value": 2310.0}, {"color": "#F38181", "font": 100, "id": "oil_well", "label": "oil_well", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#95E1D3", "font": 100, "id": "landing_stage", "label": "landing_stage", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#95E1D3", "font": 100, "id": "lake", "label": "lake", "shape": "dot", "size": 80, "value": 235.0}, {"color": "#F38181", "font": 100, "id": "scattered", "label": "scattered", "shape": "dot", "size": 80, "value": 145.0}, {"color": "#F38181", "font": 100, "id": "weed", "label": "weed", "shape": "dot", "size": 80, "value": 3.0}, {"color": "#FCE38A", "font": 100, "id": "cemetery", "label": "cemetery", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#FCE38A", "font": 100, "id": "interlaced", "label": "interlaced", "shape": "dot", "size": 80, "value": 4.0}, {"color": "#95E1D3", "font": 100, "id": "sea", "label": "sea", "shape": "dot", "size": 80, "value": 194.0}, {"color": "#FCE38A", "font": 100, "id": "container", "label": "container", "shape": "dot", "size": 80, "value": 22.0}, {"color": "#95E1D3", "font": 100, "id": "blue", "label": "blue", "shape": "dot", "size": 80, "value": 440.0}, {"color": "#FCE38A", "font": 100, "id": "greenbelt", "label": "greenbelt", "shape": "dot", "size": 80, "value": 5.0}, {"color": "#FCE38A", "font": 100, "id": "mangrove", "label": "mangrove", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#95E1D3", "font": 100, "id": "beach", "label": "beach", "shape": "dot", "size": 80, "value": 505.0}, {"color": "#F38181", "font": 100, "id": "circular_farmland", "label": "circular_farmland", "shape": "dot", "size": 80, "value": 2.0}, {"color": "#FCE38A", "font": 100, "id": "red", "label": "red", "shape": "dot", "size": 80, "value": 499.0}, {"color": "#EAFFD0", "font": 100, "id": "parking_space_marking", "label": "parking_space_marking", "shape": "dot", "size": 80, "value": 1.0}, {"color": "#FCE38A", "font": 100, "id": "commercial_area", "label": "commercial_area", "shape": "dot", "size": 80, "value": 278.0}, {"color": "#F38181", "font": 100, "id": "shrubwood", "label": "shrubwood", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#FCE38A", "font": 100, "id": "rectangular", "label": "rectangular", "shape": "dot", "size": 80, "value": 268.0}, {"color": "#FCE38A", "font": 100, "id": "airplane", "label": "airplane", "shape": "dot", "size": 80, "value": 26.0}, {"color": "#95E1D3", "font": 100, "id": "ship", "label": "ship", "shape": "dot", "size": 80, "value": 143.0}, {"color": "#FCE38A", "font": 100, "id": "solar_panel", "label": "solar_panel", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#FCE38A", "font": 100, "id": "hierarchical", "label": "hierarchical", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#FCE38A", "font": 100, "id": "track", "label": "track", "shape": "dot", "size": 80, "value": 140.0}, {"color": "#EAFFD0", "font": 100, "id": "marking", "label": "marking", "shape": "dot", "size": 80, "value": 31.0}, {"color": "#F38181", "font": 100, "id": "green", "label": "green", "shape": "dot", "size": 80, "value": 6527.0}, {"color": "#95E1D3", "font": 100, "id": "sea_island", "label": "sea_island", "shape": "dot", "size": 80, "value": 2.0}, {"color": "#FCE38A", "font": 100, "id": "tree", "label": "tree", "shape": "dot", "size": 80, "value": 5710.0}, {"color": "#FCE38A", "font": 100, "id": "tennis_court", "label": "tennis_court", "shape": "dot", "size": 80, "value": 264.0}, {"color": "#FCE38A", "font": 100, "id": "storage_tank", "label": "storage_tank", "shape": "dot", "size": 80, "value": 393.0}, {"color": "#F38181", "font": 100, "id": "ravine", "label": "ravine", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#FCE38A", "font": 100, "id": "transformer_station", "label": "transformer_station", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#FCE38A", "font": 100, "id": "centric", "label": "centric", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#FCE38A", "font": 100, "id": "shipping_yard", "label": "shipping_yard", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#EAFFD0", "font": 100, "id": "freeway", "label": "freeway", "shape": "dot", "size": 80, "value": 25.0}, {"color": "#FCE38A", "font": 100, "id": "farmland", "label": "farmland", "shape": "dot", "size": 80, "value": 583.0}, {"color": "#F38181", "font": 100, "id": "gravel", "label": "gravel", "shape": "dot", "size": 80, "value": 3.0}, {"color": "#95E1D3", "font": 100, "id": "white", "label": "white", "shape": "dot", "size": 80, "value": 1228.0}, {"color": "#FCE38A", "font": 100, "id": "buildings", "label": "buildings", "shape": "dot", "size": 80, "value": 4456.0}, {"color": "#F38181", "font": 100, "id": "bare_land", "label": "bare_land", "shape": "dot", "size": 80, "value": 172.0}, {"color": "#FCE38A", "font": 100, "id": "football_field", "label": "football_field", "shape": "dot", "size": 80, "value": 598.0}, {"color": "#FCE38A", "font": 100, "id": "roundabout", "label": "roundabout", "shape": "dot", "size": 80, "value": 3.0}, {"color": "#FCE38A", "font": 100, "id": "transformer", "label": "transformer", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#95E1D3", "font": 100, "id": "sand", "label": "sand", "shape": "dot", "size": 80, "value": 128.0}, {"color": "#95E1D3", "font": 100, "id": "dam", "label": "dam", "shape": "dot", "size": 80, "value": 11.0}, {"color": "#FCE38A", "font": 100, "id": "gravestone", "label": "gravestone", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#95E1D3", "font": 100, "id": "ice", "label": "ice", "shape": "dot", "size": 80, "value": 6.0}, {"color": "#F38181", "font": 100, "id": "wetland", "label": "wetland", "shape": "dot", "size": 80, "value": 19.0}, {"color": "#FCE38A", "font": 100, "id": "dense", "label": "dense", "shape": "dot", "size": 80, "value": 610.0}, {"color": "#F38181", "font": 100, "id": "distributed", "label": "distributed", "shape": "dot", "size": 80, "value": 61.0}, {"color": "#FCE38A", "font": 100, "id": "sparse_residential", "label": "sparse_residential", "shape": "dot", "size": 80, "value": 12.0}, {"color": "#FCE38A", "font": 100, "id": "terrace", "label": "terrace", "shape": "dot", "size": 80, "value": 9.0}, {"color": "#FCE38A", "font": 100, "id": "deadend_road", "label": "deadend_road", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#F38181", "font": 100, "id": "oil_gas_field", "label": "oil_gas_field", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#FCE38A", "font": 100, "id": "airport", "label": "airport", "shape": "dot", "size": 80, "value": 406.0}, {"color": "#EAFFD0", "font": 100, "id": "overpass", "label": "overpass", "shape": "dot", "size": 80, "value": 63.0}, {"color": "#EAFFD0", "font": 100, "id": "roads", "label": "roads", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#FCE38A", "font": 100, "id": "tree_lined_path", "label": "tree_lined_path", "shape": "dot", "size": 80, "value": 6.0}, {"color": "#95E1D3", "font": 100, "id": "mountain", "label": "mountain", "shape": "dot", "size": 80, "value": 386.0}, {"color": "#FCE38A", "font": 100, "id": "palace", "label": "palace", "shape": "dot", "size": 80, "value": 2.0}, {"color": "#FCE38A", "font": 100, "id": "mobile_home_park", "label": "mobile_home_park", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#95E1D3", "font": 100, "id": "snow_mountain", "label": "snow_mountain", "shape": "dot", "size": 80, "value": 98.0}, {"color": "#EAFFD0", "font": 100, "id": "parking_lot", "label": "parking_lot", "shape": "dot", "size": 80, "value": 970.0}, {"color": "#FCE38A", "font": 100, "id": "low-rise", "label": "low-rise", "shape": "dot", "size": 80, "value": 3.0}, {"color": "#FCE38A", "font": 100, "id": "school", "label": "school", "shape": "dot", "size": 80, "value": 288.0}, {"color": "#FCE38A", "font": 100, "id": "resort", "label": "resort", "shape": "dot", "size": 80, "value": 230.0}, {"color": "#FCE38A", "font": 100, "id": "park", "label": "park", "shape": "dot", "size": 80, "value": 1692.0}, {"color": "#FCE38A", "font": 100, "id": "runway", "label": "runway", "shape": "dot", "size": 80, "value": 173.0}, {"color": "#95E1D3", "font": 100, "id": "irregular", "label": "irregular", "shape": "dot", "size": 80, "value": 416.0}, {"color": "#FCE38A", "font": 100, "id": "christmas_tree_farm", "label": "christmas_tree_farm", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#FCE38A", "font": 100, "id": "convention_center", "label": "convention_center", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#95E1D3", "font": 100, "id": "railway", "label": "railway", "shape": "dot", "size": 80, "value": 341.0}, {"color": "#FCE38A", "font": 100, "id": "viaduct_hub", "label": "viaduct_hub", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#FCE38A", "font": 100, "id": "bridge", "label": "bridge", "shape": "dot", "size": 80, "value": 480.0}, {"color": "#FCE38A", "font": 100, "id": "waste_water_plant", "label": "waste_water_plant", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#EAFFD0", "font": 100, "id": "airport_runway_marking", "label": "airport_runway_marking", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#95E1D3", "font": 100, "id": "vein", "label": "vein", "shape": "dot", "size": 80, "value": 3.0}, {"color": "#95E1D3", "font": 100, "id": "sea_ice", "label": "sea_ice", "shape": "dot", "size": 80, "value": 0.0}, {"color": "#EAFFD0", "font": 100, "id": "tarmac", "label": "tarmac", "shape": "dot", "size": 80, "value": 26.0}, {"color": "#95E1D3", "font": 100, "id": "lakeshore", "label": "lakeshore", "shape": "dot", "size": 80, "value": 0.0}]);
+        edges = new vis.DataSet([{"arrows": "to", "color": "gray", "from": "airplane", "size": 80, "to": "airport"}, {"arrows": "to", "color": "gray", "from": "airport", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "runway", "size": 80, "to": "airport"}, {"arrows": "to", "color": "gray", "from": "airport", "size": 80, "to": "terminal_building"}, {"arrows": "to", "color": "gray", "from": "airport", "size": 80, "to": "tarmac"}, {"arrows": "to", "color": "gray", "from": "farmland", "size": 80, "to": "airport"}, {"arrows": "to", "color": "gray", "from": "greenbelt", "size": 80, "to": "airport"}, {"arrows": "to", "color": "gray", "from": "road", "size": 80, "to": "airport"}, {"arrows": "to", "color": "gray", "from": "vehicle", "size": 80, "to": "tarmac"}, {"arrows": "to", "color": "gray", "from": "jet_bridge", "size": 80, "to": "terminal_building"}, {"arrows": "to", "color": "gray", "from": "airplane", "size": 80, "to": "jet_bridge"}, {"arrows": "to", "color": "gray", "from": "marking", "size": 80, "to": "airport_runway_marking"}, {"arrows": "to", "color": "gray", "from": "sand", "size": 80, "to": "bare_land"}, {"arrows": "to", "color": "gray", "from": "shrubwood", "size": 80, "to": "bare_land"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "bare_land"}, {"arrows": "to", "color": "gray", "from": "dirt_path", "size": 80, "to": "bare_land"}, {"arrows": "to", "color": "gray", "from": "ravine", "size": 80, "to": "bare_land"}, {"arrows": "to", "color": "gray", "from": "gravel", "size": 80, "to": "bare_land"}, {"arrows": "to", "color": "gray", "from": "sand", "size": 80, "to": "baseball_field"}, {"arrows": "to", "color": "gray", "from": "grass", "size": 80, "to": "baseball_field"}, {"arrows": "to", "color": "gray", "from": "baseball_field", "size": 80, "to": "fanshaped"}, {"arrows": "to", "color": "gray", "from": "marking", "size": 80, "to": "basketball_court"}, {"arrows": "to", "color": "gray", "from": "basketball_court", "size": 80, "to": "rectangular"}, {"arrows": "to", "color": "gray", "from": "sand", "size": 80, "to": "beach"}, {"arrows": "to", "color": "gray", "from": "sea", "size": 80, "to": "beach"}, {"arrows": "to", "color": "gray", "from": "coastline", "size": 80, "to": "beach"}, {"arrows": "to", "color": "gray", "from": "bridge", "size": 80, "to": "river"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "cemetery"}, {"arrows": "to", "color": "gray", "from": "road", "size": 80, "to": "cemetery"}, {"arrows": "to", "color": "gray", "from": "cemetery", "size": 80, "to": "gravestone"}, {"arrows": "to", "color": "gray", "from": "road", "size": 80, "to": "christmas_tree_farm"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "christmas_tree_farm"}, {"arrows": "to", "color": "gray", "from": "greenbelt", "size": 80, "to": "church"}, {"arrows": "to", "color": "gray", "from": "church", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "circular_farmland", "size": 80, "to": "circular"}, {"arrows": "to", "color": "gray", "from": "circular_farmland", "size": 80, "to": "green"}, {"arrows": "to", "color": "gray", "from": "cloud", "size": 80, "to": "white"}, {"arrows": "to", "color": "gray", "from": "cloud", "size": 80, "to": "irregular"}, {"arrows": "to", "color": "gray", "from": "commercial_area", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "commercial_area", "size": 80, "to": "high-rise"}, {"arrows": "to", "color": "gray", "from": "commercial_area", "size": 80, "to": "dense"}, {"arrows": "to", "color": "gray", "from": "commercial_area", "size": 80, "to": "road"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "convention_center"}, {"arrows": "to", "color": "gray", "from": "zebra_crossing", "size": 80, "to": "crosswalk"}, {"arrows": "to", "color": "gray", "from": "roads", "size": 80, "to": "crosswalk"}, {"arrows": "to", "color": "gray", "from": "vehicle", "size": 80, "to": "crosswalk"}, {"arrows": "to", "color": "gray", "from": "dam", "size": 80, "to": "water"}, {"arrows": "to", "color": "gray", "from": "road", "size": 80, "to": "deadend_road"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "deadend_road"}, {"arrows": "to", "color": "gray", "from": "deadend_road", "size": 80, "to": "road"}, {"arrows": "to", "color": "gray", "from": "deadend_road", "size": 80, "to": "circular"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "dense_residential"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "dense_residential"}, {"arrows": "to", "color": "gray", "from": "dense_residential", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "dense_residential", "size": 80, "to": "low-rise"}, {"arrows": "to", "color": "gray", "from": "road", "size": 80, "to": "dense_residential"}, {"arrows": "to", "color": "gray", "from": "dense_residential", "size": 80, "to": "dense"}, {"arrows": "to", "color": "gray", "from": "sand", "size": 80, "to": "desert"}, {"arrows": "to", "color": "gray", "from": "shrubwood", "size": 80, "to": "desert_chaparral"}, {"arrows": "to", "color": "gray", "from": "desert_chaparral", "size": 80, "to": "scattered"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "football_field"}, {"arrows": "to", "color": "gray", "from": "football_field", "size": 80, "to": "track"}, {"arrows": "to", "color": "gray", "from": "football_field", "size": 80, "to": "rectangular"}, {"arrows": "to", "color": "gray", "from": "marking", "size": 80, "to": "freeway"}, {"arrows": "to", "color": "gray", "from": "vehicle", "size": 80, "to": "freeway"}, {"arrows": "to", "color": "gray", "from": "freeway", "size": 80, "to": "four_lanes_width"}, {"arrows": "to", "color": "gray", "from": "road", "size": 80, "to": "freeway"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "golf_course"}, {"arrows": "to", "color": "gray", "from": "sand", "size": 80, "to": "golf_course"}, {"arrows": "to", "color": "gray", "from": "grass", "size": 80, "to": "golf_course"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "grass"}, {"arrows": "to", "color": "gray", "from": "grass", "size": 80, "to": "green"}, {"arrows": "to", "color": "gray", "from": "ship", "size": 80, "to": "harbor"}, {"arrows": "to", "color": "gray", "from": "harbor", "size": 80, "to": "water"}, {"arrows": "to", "color": "gray", "from": "landing_stage", "size": 80, "to": "harbor"}, {"arrows": "to", "color": "gray", "from": "industrial_area", "size": 80, "to": "blue"}, {"arrows": "to", "color": "gray", "from": "industrial_area", "size": 80, "to": "rectangular"}, {"arrows": "to", "color": "gray", "from": "industrial_area", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "industrial_area", "size": 80, "to": "low-rise"}, {"arrows": "to", "color": "gray", "from": "industrial_area", "size": 80, "to": "road"}, {"arrows": "to", "color": "gray", "from": "roads", "size": 80, "to": "intersection"}, {"arrows": "to", "color": "gray", "from": "vehicle", "size": 80, "to": "intersection"}, {"arrows": "to", "color": "gray", "from": "lake", "size": 80, "to": "irregular"}, {"arrows": "to", "color": "gray", "from": "lake", "size": 80, "to": "lakeshore"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "lakeshore"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "lakeshore"}, {"arrows": "to", "color": "gray", "from": "sand", "size": 80, "to": "lakeshore"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "mangrove"}, {"arrows": "to", "color": "gray", "from": "mangrove", "size": 80, "to": "red"}, {"arrows": "to", "color": "gray", "from": "mobile_home_park", "size": 80, "to": "rectangular"}, {"arrows": "to", "color": "gray", "from": "mobile_home_park", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "mobile_home_park"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "mountain"}, {"arrows": "to", "color": "gray", "from": "sand", "size": 80, "to": "mountain"}, {"arrows": "to", "color": "gray", "from": "mountain", "size": 80, "to": "vein"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "oil_gas_field"}, {"arrows": "to", "color": "gray", "from": "sand", "size": 80, "to": "oil_gas_field"}, {"arrows": "to", "color": "gray", "from": "oil_well", "size": 80, "to": "oil_gas_field"}, {"arrows": "to", "color": "gray", "from": "road", "size": 80, "to": "overpass"}, {"arrows": "to", "color": "gray", "from": "vehicle", "size": 80, "to": "overpass"}, {"arrows": "to", "color": "gray", "from": "marking", "size": 80, "to": "overpass"}, {"arrows": "to", "color": "gray", "from": "greenbelt", "size": 80, "to": "palace"}, {"arrows": "to", "color": "gray", "from": "palace", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "palace", "size": 80, "to": "centric"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "park"}, {"arrows": "to", "color": "gray", "from": "road", "size": 80, "to": "park"}, {"arrows": "to", "color": "gray", "from": "park", "size": 80, "to": "water"}, {"arrows": "to", "color": "gray", "from": "park", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "vehicle", "size": 80, "to": "parking_lot"}, {"arrows": "to", "color": "gray", "from": "parking_space_marking", "size": 80, "to": "parking_lot"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "parking_space_marking"}, {"arrows": "to", "color": "gray", "from": "pipeline", "size": 80, "to": "interlaced"}, {"arrows": "to", "color": "gray", "from": "railway", "size": 80, "to": "parallel"}, {"arrows": "to", "color": "gray", "from": "railway", "size": 80, "to": "railway_station"}, {"arrows": "to", "color": "gray", "from": "railway_station", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "rectangular_farmland", "size": 80, "to": "rectangular"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "resort"}, {"arrows": "to", "color": "gray", "from": "resort", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "resort", "size": 80, "to": "water"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "resort"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "river"}, {"arrows": "to", "color": "gray", "from": "river", "size": 80, "to": "rectangular_farmland"}, {"arrows": "to", "color": "gray", "from": "river", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "vehicle", "size": 80, "to": "roundabout"}, {"arrows": "to", "color": "gray", "from": "roundabout", "size": 80, "to": "circular"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "roundabout"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "roundabout"}, {"arrows": "to", "color": "gray", "from": "roundabout", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "school", "size": 80, "to": "football_field"}, {"arrows": "to", "color": "gray", "from": "school", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "school"}, {"arrows": "to", "color": "gray", "from": "sclerophyllous_forest", "size": 80, "to": "green"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "sclerophyllous_forest"}, {"arrows": "to", "color": "gray", "from": "sea", "size": 80, "to": "blue"}, {"arrows": "to", "color": "gray", "from": "water", "size": 80, "to": "sea"}, {"arrows": "to", "color": "gray", "from": "ship", "size": 80, "to": "sea"}, {"arrows": "to", "color": "gray", "from": "sea_island", "size": 80, "to": "sea"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "sea_island"}, {"arrows": "to", "color": "gray", "from": "sea_ice", "size": 80, "to": "white"}, {"arrows": "to", "color": "gray", "from": "ice", "size": 80, "to": "sea_ice"}, {"arrows": "to", "color": "gray", "from": "sea_ice", "size": 80, "to": "sea"}, {"arrows": "to", "color": "gray", "from": "container", "size": 80, "to": "shipping_yard"}, {"arrows": "to", "color": "gray", "from": "shipping_yard", "size": 80, "to": "rectangular"}, {"arrows": "to", "color": "gray", "from": "shrubwood", "size": 80, "to": "green"}, {"arrows": "to", "color": "gray", "from": "snow", "size": 80, "to": "snow_mountain"}, {"arrows": "to", "color": "gray", "from": "sand", "size": 80, "to": "snow_mountain"}, {"arrows": "to", "color": "gray", "from": "snow_mountain", "size": 80, "to": "vein"}, {"arrows": "to", "color": "gray", "from": "snow_mountain", "size": 80, "to": "white"}, {"arrows": "to", "color": "gray", "from": "solar_panel", "size": 80, "to": "rectangular"}, {"arrows": "to", "color": "gray", "from": "solar_panel", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "sparse_residential"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "sparse_residential"}, {"arrows": "to", "color": "gray", "from": "sparse_residential", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "sparse_residential", "size": 80, "to": "low-rise"}, {"arrows": "to", "color": "gray", "from": "sparse_residential", "size": 80, "to": "scattered"}, {"arrows": "to", "color": "gray", "from": "greenbelt", "size": 80, "to": "square"}, {"arrows": "to", "color": "gray", "from": "square", "size": 80, "to": "single_building"}, {"arrows": "to", "color": "gray", "from": "square", "size": 80, "to": "centric"}, {"arrows": "to", "color": "gray", "from": "stadium", "size": 80, "to": "football_field"}, {"arrows": "to", "color": "gray", "from": "stadium", "size": 80, "to": "green"}, {"arrows": "to", "color": "gray", "from": "grass", "size": 80, "to": "stadium"}, {"arrows": "to", "color": "gray", "from": "storage_tank", "size": 80, "to": "circular"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "swimming_pool"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "swimming_pool"}, {"arrows": "to", "color": "gray", "from": "swimming_pool", "size": 80, "to": "blue"}, {"arrows": "to", "color": "gray", "from": "marking", "size": 80, "to": "tennis_court"}, {"arrows": "to", "color": "gray", "from": "tennis_court", "size": 80, "to": "rectangular"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "tennis_court"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "terrace"}, {"arrows": "to", "color": "gray", "from": "farmland", "size": 80, "to": "terrace"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "terrace"}, {"arrows": "to", "color": "gray", "from": "terrace", "size": 80, "to": "hierarchical"}, {"arrows": "to", "color": "gray", "from": "thermal_power_station", "size": 80, "to": "circular"}, {"arrows": "to", "color": "gray", "from": "thermal_power_station", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "transformer", "size": 80, "to": "transformer_station"}, {"arrows": "to", "color": "gray", "from": "greenbelt", "size": 80, "to": "transformer_station"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "transformer_station"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "tree_lined_path"}, {"arrows": "to", "color": "gray", "from": "road", "size": 80, "to": "tree_lined_path"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "viaduct_hub"}, {"arrows": "to", "color": "gray", "from": "road", "size": 80, "to": "viaduct_hub"}, {"arrows": "to", "color": "gray", "from": "viaduct_hub", "size": 80, "to": "buildings"}, {"arrows": "to", "color": "gray", "from": "viaduct_hub", "size": 80, "to": "interlaced"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "viaduct_hub"}, {"arrows": "to", "color": "gray", "from": "waste_water_plant", "size": 80, "to": "circular"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "waste_water_plant"}, {"arrows": "to", "color": "gray", "from": "waste_water_plant", "size": 80, "to": "single_building"}, {"arrows": "to", "color": "gray", "from": "wetland", "size": 80, "to": "water"}, {"arrows": "to", "color": "gray", "from": "weed", "size": 80, "to": "wetland"}, {"arrows": "to", "color": "gray", "from": "wetland", "size": 80, "to": "distributed"}, {"arrows": "to", "color": "gray", "from": "tree", "size": 80, "to": "wetland"}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": true,
+        "filter": true
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "repulsion": {
+            "centralGravity": 0.5,
+            "damping": 0.09,
+            "nodeDistance": 90,
+            "springConstant": 0.05,
+            "springLength": 30
+        },
+        "solver": "repulsion",
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+        
+        
+
+        
+        // if this network requires displaying the configure window,
+        // put it in its div
+        options.configure["container"] = document.getElementById("config");
+        
+
+        network = new vis.Network(container, data, options);
+	 
+        
+
+
+        
+        network.on("stabilizationProgress", function(params) {
+      		document.getElementById('loadingBar').removeAttribute("style");
+	        var maxWidth = 496;
+	        var minWidth = 20;
+	        var widthFactor = params.iterations/params.total;
+	        var width = Math.max(minWidth,maxWidth * widthFactor);
+
+	        document.getElementById('bar').style.width = width + 'px';
+	        document.getElementById('text').innerHTML = Math.round(widthFactor*100) + '%';
+	    });
+	    network.once("stabilizationIterationsDone", function() {
+	        document.getElementById('text').innerHTML = '100%';
+	        document.getElementById('bar').style.width = '496px';
+	        document.getElementById('loadingBar').style.opacity = 0;
+	        // really clean the dom element
+	        setTimeout(function () {document.getElementById('loadingBar').style.display = 'none';}, 500);
+	    });
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>
